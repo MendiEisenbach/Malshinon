@@ -15,7 +15,7 @@ namespace Malshinon.DAL
     {
         private DbConnection dbConnection = new DbConnection();
 
-        public void AddReport(IntelReport intelReportort)
+        public void AddReport(IntelReport intelReport)
         { 
             MySqlConnection conn = null;
             
@@ -23,14 +23,13 @@ namespace Malshinon.DAL
             {
                 conn = dbConnection.GetOpenConnection();
 
-                string query = @"INSERT INTO IntelReports(Id, ReporterId, TargetId, Text)
-                                VALUES(@Id, @ReporterId, @TargetId, @Text)";
+                string query = @"INSERT INTO IntelReports (reporter_id, target_id, TEXT)
+                         VALUES (@reporter_id, @target_id, @text)";
                 MySqlCommand cmd = new MySqlCommand(query, conn);
 
-                cmd.Parameters.AddWithValue("@Id", intelReportort.Id);
-                cmd.Parameters.AddWithValue("@ReporterId", intelReportort.ReporterId);
-                cmd.Parameters.AddWithValue("@TargetId", intelReportort.TargetId);
-                cmd.Parameters.AddWithValue("@Text", intelReportort.Text);
+                cmd.Parameters.AddWithValue("@reporter_id", intelReport.ReporterId);
+                cmd.Parameters.AddWithValue("@target_id", intelReport.TargetId);
+                cmd.Parameters.AddWithValue("@text", intelReport.Text);
 
                 cmd.ExecuteNonQuery();
             }
@@ -57,7 +56,7 @@ namespace Malshinon.DAL
             {
                 conn = dbConnection.GetOpenConnection();
 
-                string query = "SELECT * FROM IntelReport WHERE id = @id LIMIT 1";
+                string query = "SELECT * FROM IntelReports WHERE id = @id LIMIT 1";
 
                 MySqlCommand cmd = new MySqlCommand(query, conn);
                 cmd.Parameters.AddWithValue("@id", id);
@@ -69,18 +68,16 @@ namespace Malshinon.DAL
                     intelReport = new IntelReport
                     {
                         Id = reader.GetInt32("id"),
-                        ReporterId = reader.GetInt32("ReporterId"),
-                        TargetId = reader.GetInt32("TargetId"),
-                        Text = reader.GetString("Text"),
-                        Timestamp = reader.GetDateTime("Timestamp")
+                        ReporterId = reader.GetInt32("reporter_id"),
+                        TargetId = reader.GetInt32("target_id"),
+                        Text = reader.GetString("TEXT"),
+                        Timestamp = reader.GetDateTime("TIMESTAMP")
                     };
                 }
-
             }
-
             catch (MySqlException ex)
             {
-                Console.WriteLine($"Error Get Reporter by Id: {ex.Message}");
+                Console.WriteLine($"Error Get Report by Id: {ex.Message}");
             }
 
             finally
@@ -91,7 +88,6 @@ namespace Malshinon.DAL
                 }
             }
             return intelReport;
-        
         }
 
         public List<IntelReport> GetReportsByReporter(int reporterId)
@@ -103,7 +99,7 @@ namespace Malshinon.DAL
             {
                 conn = dbConnection.GetOpenConnection();
 
-                string query = "SELECT * FROM IntelReport WHERE reporterId = @reporterId";
+                string query = "SELECT * FROM IntelReports WHERE reporter_id = @reporterId";
 
                 MySqlCommand cmd = new MySqlCommand(query, conn);
                 cmd.Parameters.AddWithValue("@reporterId", reporterId);
@@ -114,10 +110,10 @@ namespace Malshinon.DAL
                     IntelReport IntelReport = new IntelReport
                     {
                         Id = reader.GetInt32("id"),
-                        ReporterId = reader.GetInt32("ReporterId"),
-                        TargetId = reader.GetInt32("TargetId"),
-                        Text = reader.GetString("Text"),
-                        Timestamp = reader.GetDateTime("Timestamp")
+                        ReporterId = reader.GetInt32("reporter_id"),
+                        TargetId = reader.GetInt32("target_id"),
+                        Text = reader.GetString("TEXT"),
+                        Timestamp = reader.GetDateTime("TIMESTAMP")
                     };
 
                     Reports.Add(IntelReport);
@@ -147,10 +143,9 @@ namespace Malshinon.DAL
             {
                 conn = dbConnection.GetOpenConnection();
 
-                string query = "SELECT * FROM IntelReport WHERE targetId = @targetId";
-
+                string query = "SELECT * FROM IntelReports WHERE target_id = @targetId";
                 MySqlCommand cmd = new MySqlCommand(query, conn);
-                cmd.Parameters.AddWithValue("@reporterId", targetId);
+                cmd.Parameters.AddWithValue("@targetId", targetId);
                 MySqlDataReader reader = cmd.ExecuteReader();
 
                 while (reader.Read())
@@ -158,10 +153,10 @@ namespace Malshinon.DAL
                     IntelReport IntelReport = new IntelReport
                     {
                         Id = reader.GetInt32("id"),
-                        ReporterId = reader.GetInt32("ReporterId"),
-                        TargetId = reader.GetInt32("TargetId"),
-                        Text = reader.GetString("Text"),
-                        Timestamp = reader.GetDateTime("Timestamp")
+                        ReporterId = reader.GetInt32("reporter_id"),
+                        TargetId = reader.GetInt32("target_id"),
+                        Text = reader.GetString("TEXT"),
+                        Timestamp = reader.GetDateTime("TIMESTAMP")
                     };
 
                     Reports.Add(IntelReport);
@@ -191,14 +186,14 @@ namespace Malshinon.DAL
                 conn = dbConnection.GetOpenConnection();
 
                 string query = @"UPDATE IntelReports 
-                         SET ReporterId = @ReporterId, 
-                             TargetId = @TargetId, 
-                             Text = @Text 
-                         WHERE id = @id";
+                 SET reporter_id = @ReporterId, 
+                     target_id = @TargetId, 
+                     TEXT = @Text 
+                 WHERE id = @id";
 
                 MySqlCommand cmd = new MySqlCommand(query, conn);
                 cmd.Parameters.AddWithValue("@ReporterId", report.ReporterId);
-                cmd.Parameters.AddWithValue("@TargetId", report.ReporterId);
+                cmd.Parameters.AddWithValue("@TargetId", report.TargetId);
                 cmd.Parameters.AddWithValue("@Text", report.Text);
                 cmd.Parameters.AddWithValue("@id", report.Id);
 
@@ -222,27 +217,7 @@ namespace Malshinon.DAL
             return report;
         }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        //public void UpdateReport(IntelReport report) { /* Update Report Logic */ }
     }
 }
+
+//public void UpdateReport(IntelReport report) { /* Update Report Logic */ }
