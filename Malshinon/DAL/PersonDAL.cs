@@ -14,8 +14,6 @@ namespace Malshinon.DAL
     {
         private DbConnection dbConnection = new DbConnection();
 
-
-
         public void AddPerson(Person person)
         {
             MySqlConnection conn = null;
@@ -242,8 +240,7 @@ namespace Malshinon.DAL
         }
 
 
-
-        public void UpdatePerson(Person person)
+        public Person UpdatePerson(Person person)
         {
             MySqlConnection conn = null;
             try
@@ -251,18 +248,12 @@ namespace Malshinon.DAL
                 conn = dbConnection.GetOpenConnection();
 
                 string query = @"UPDATE People 
-                         SET first_name = @first_name, 
-                             last_name = @last_name, 
-                             secret_code = @secret_code, 
-                             type = @type, 
+                         SET type = @type, 
                              num_reports = @num_reports, 
                              num_mentions = @num_mentions 
                          WHERE id = @id";
 
                 MySqlCommand cmd = new MySqlCommand(query, conn);
-                cmd.Parameters.AddWithValue("@first_name", person.FirstName);
-                cmd.Parameters.AddWithValue("@last_name", person.LastName);
-                cmd.Parameters.AddWithValue("@secret_code", person.SecretCode);
                 cmd.Parameters.AddWithValue("@type", person.Type);
                 cmd.Parameters.AddWithValue("@num_reports", person.NumReports);
                 cmd.Parameters.AddWithValue("@num_mentions", person.NumMentions);
@@ -285,7 +276,9 @@ namespace Malshinon.DAL
                     dbConnection.CloseConnection(conn);
                 }
             }
+            return person;
         }
+
 
         public void DeletePersonById(int id)
         {

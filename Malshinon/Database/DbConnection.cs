@@ -25,7 +25,6 @@ namespace Malshinon.Database
             }
         }
 
-        // פונקציה שמחזירה חיבור פתוח לשימוש אחר במחלקה חיצונית
         public MySqlConnection GetOpenConnection()
         {
             MySqlConnection conn = new MySqlConnection(connectionString);
@@ -33,7 +32,6 @@ namespace Malshinon.Database
             return conn;
         }
 
-        // פונקציה לסגירת החיבור (כאשר מחזירים חיבור פתוח דרך GetOpenConnection)
         public void CloseConnection(MySqlConnection conn)
         {
             if (conn != null)
