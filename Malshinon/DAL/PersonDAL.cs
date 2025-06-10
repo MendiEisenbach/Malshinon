@@ -8,12 +8,13 @@ using Malshinon.Models;
 using Malshinon.Database;
 
 
-namespace Malshinon.DAL
+namespace Malshinon.DAL 
 {
-    public class PersonDAL
+    public class PersonDAL 
     {
         private DbConnection dbConnection = new DbConnection();
-        
+
+
 
         public void AddPerson(Person person)
         {
@@ -98,6 +99,150 @@ namespace Malshinon.DAL
             return person;
         }
 
+
+        public Person GetPersonBySecretCode(string secretCode)
+        {
+            Person? person = null;
+            MySqlConnection conn = null;
+
+            try
+            {
+                conn = dbConnection.GetOpenConnection();
+
+                string query = "SELECT * FROM People WHERE secret_code = @secret_code LIMIT 1";
+
+                MySqlCommand cmd = new MySqlCommand(query, conn);
+                cmd.Parameters.AddWithValue("@secret_code", secretCode);
+
+                MySqlDataReader reader = cmd.ExecuteReader();
+
+                if (reader.Read())
+                {
+                    person = new Person
+                    {
+                        Id = reader.GetInt32("id"),
+                        FirstName = reader.GetString("first_name"),
+                        LastName = reader.GetString("last_name"),
+                        SecretCode = reader.GetString("secret_code"),
+                        Type = reader.GetString("type"),
+                        NumReports = reader.GetInt32("num_reports"),
+                        NumMentions = reader.GetInt32("num_mentions")
+                    };
+                }
+            }
+            catch (MySqlException ex)
+            {
+                Console.WriteLine($"Error Get Person By Secret Code: {ex.Message}");
+            }
+            finally
+            {
+                if (conn != null)
+                {
+                    dbConnection.CloseConnection(conn);
+                }
+            }
+            return person;
+        }
+
+        public bool PersonExistByName(string firstName, string lastName)
+        {
+            bool exists = false;
+            MySqlConnection conn = null;
+
+            try
+            {
+                conn = dbConnection.GetOpenConnection();
+
+                string query = "SELECT COUNT(*) FROM People WHERE first_name = @first_name AND last_name = @last_name";
+
+                MySqlCommand cmd = new MySqlCommand(query, conn);
+                cmd.Parameters.AddWithValue("@first_name", firstName);
+                cmd.Parameters.AddWithValue("@last_name", lastName);
+
+                exists = Convert.ToInt32(cmd.ExecuteScalar()) > 0;
+            }
+            catch (MySqlException ex)
+            {
+                Console.WriteLine($"Error checking person existence by name: {ex.Message}");
+            }
+            finally
+            {
+                if (conn != null)
+                {
+                    dbConnection.CloseConnection(conn);
+                }
+            }
+            return exists;
+        }
+
+        public bool PersonExistBySecretCode(string secretCode)
+        {
+            bool exists = false;
+            MySqlConnection conn = null;
+
+            try
+            {
+                conn = dbConnection.GetOpenConnection();
+
+                string query = "SELECT COUNT(*) FROM People WHERE secret_code = @secret_code";
+
+                MySqlCommand cmd = new MySqlCommand(query, conn);
+                cmd.Parameters.AddWithValue("@secret_code", secretCode);
+
+                exists = Convert.ToInt32(cmd.ExecuteScalar()) > 0;
+            }
+            catch (MySqlException ex)
+            {
+                Console.WriteLine($"Error checking person existence by secret code: {ex.Message}");
+            }
+            finally
+            {
+                if (conn != null)
+                {
+                    dbConnection.CloseConnection(conn);
+                }
+            }
+            return exists;
+        }
+
+
+        public string GetSecretCodeByName(string firstName, string lastName)
+        {
+            string secretCode = "";
+            MySqlConnection conn = null;
+
+            try
+            {
+                conn = dbConnection.GetOpenConnection();
+
+                string query = "SELECT secret_code FROM People WHERE first_name = @first_name AND last_name = @last_name LIMIT 1";
+
+                MySqlCommand cmd = new MySqlCommand(query, conn);
+                cmd.Parameters.AddWithValue("@first_name", firstName);
+                cmd.Parameters.AddWithValue("@last_name", lastName);
+
+                object result = cmd.ExecuteScalar();
+                if (result != null)
+                {
+                    secretCode = result.ToString();
+                }
+            }
+            catch (MySqlException ex)
+            {
+                Console.WriteLine($"Error getting secret code by name: {ex.Message}");
+            }
+            finally
+            {
+                if (conn != null)
+                {
+                    dbConnection.CloseConnection(conn);
+                }
+            }
+            return secretCode;
+        }
+
+
+
         public void UpdatePerson(Person person)
         {
             MySqlConnection conn = null;
@@ -173,6 +318,52 @@ namespace Malshinon.DAL
                 }
             }
         }
+
+        public List<Person> GetAllPeople()
+        {
+            List<Person> people = new List<Person>();
+            MySqlConnection conn = null;
+
+            try
+            {
+                conn = dbConnection.GetOpenConnection();
+
+                string query = "SELECT * FROM People";
+
+                MySqlCommand cmd = new MySqlCommand(query, conn);
+                MySqlDataReader reader = cmd.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    Person person = new Person
+                    {
+                        Id = reader.GetInt32("id"),
+                        FirstName = reader.GetString("first_name"),
+                        LastName = reader.GetString("last_name"),
+                        SecretCode = reader.GetString("secret_code"),
+                        Type = reader.GetString("type"),
+                        NumReports = reader.GetInt32("num_reports"),
+                        NumMentions = reader.GetInt32("num_mentions")
+                    };
+
+                    people.Add(person);
+                }
+            }
+            catch (MySqlException ex)
+            {
+                Console.WriteLine($"Error retrieving people: {ex.Message}");
+            }
+            finally
+            {
+                if (conn != null)
+                {
+                    dbConnection.CloseConnection(conn);
+                }
+            }
+
+            return people;
+        }
+
 
     }
 
