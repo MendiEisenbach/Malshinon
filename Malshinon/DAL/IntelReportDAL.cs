@@ -220,4 +220,3 @@ namespace Malshinon.DAL
     }
 }
 
-//public void UpdateReport(IntelReport report) { /* Update Report Logic */ }
