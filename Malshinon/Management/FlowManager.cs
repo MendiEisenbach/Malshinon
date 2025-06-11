@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using Malshinon.DAL;
 using Malshinon.Models;
+using MySqlX.XDevAPI.Common;
+using static Google.Protobuf.Compiler.CodeGeneratorResponse.Types;
 
 namespace Malshinon.Management
 {
@@ -18,11 +20,48 @@ namespace Malshinon.Management
 
         public FlowManager()
         {
-            Console.WriteLine("Enter your SecretCode: ");
+            Console.WriteLine("\n--- Welcome to the Malshinon app! ---");
+            Console.WriteLine("\nEnter your SecretCode: ");
             string SecretCode = Console.ReadLine();
             reporter = GetPersonFlow(SecretCode);
-            AddReportFlow();
         }
+
+        public void Menu()
+        {
+            while (true)
+            {
+                Console.WriteLine("\n--- Main Menu ---");
+                Console.WriteLine("\n1. Add Report");
+                Console.WriteLine("2. Display Reports By Reporter");
+                Console.WriteLine("3. Get your secret code");
+                Console.WriteLine("4. Exit");
+                Console.Write("\nChoose an option: ");
+
+                string choice = Console.ReadLine();
+
+                switch (choice)
+                {
+                    case "1":
+                        AddReportFlow();
+                        break;
+                    case "2":
+                        DisplayReportsByReporterFlow();
+                        break;
+                    case "3":
+                        GetSecretCode();
+                        break;
+                    case "4":
+                        Console.WriteLine("\nExiting.");
+                        return;
+                    default:
+                        Console.WriteLine("\nInvalid choice. Please try again.");
+                        break;
+                }
+            }
+        }
+
+
+
 
         public Person GetPersonFlow(string secretCode)
         {
@@ -35,12 +74,13 @@ namespace Malshinon.Management
         }
 
 
+
         private Person AddPersonFlow(string secretCode)
         {
-            Console.WriteLine("Enter first name:");
+            Console.WriteLine("\nEnter first name:");
             string firstName = Console.ReadLine();
 
-            Console.WriteLine("Enter last name:");
+            Console.WriteLine("\nEnter last name:");
             string lastName = Console.ReadLine();
 
             Person newPerson = new Person
@@ -54,19 +94,19 @@ namespace Malshinon.Management
             };
 
             personDAL.AddPerson(newPerson);
-            Console.WriteLine("Person added successfully.");
+            Console.WriteLine("\nPerson added successfully.");
             newPerson = personDAL.GetPersonBySecretCode(secretCode);
             return newPerson;
         }
 
 
         private void AddReportFlow()
-       {
-            Console.WriteLine("Enter target SecretCode:");
+        {
+            Console.WriteLine("\nEnter target SecretCode:");
             string targetSecretCode = Console.ReadLine();
             targrt = GetPersonFlow(targetSecretCode);
 
-            Console.WriteLine("Enter report text:");
+            Console.WriteLine("\nEnter report text:");
             string reportText = Console.ReadLine();
 
             IntelReport newReport = new IntelReport
@@ -77,7 +117,7 @@ namespace Malshinon.Management
             };
 
             reportDAL.AddReport(newReport);
-            Console.WriteLine("Report added successfully.");
+            Console.WriteLine("\nReport added successfully.");
             UpdateNumReports(reporter);
             UpdateNumMentions(targrt);
         }
@@ -93,6 +133,44 @@ namespace Malshinon.Management
             person.NumMentions++;
             personDAL.UpdatePerson(person);
         }
-    }
+
+        public void DisplayReportsByReporterFlow()
+        {
+            Console.WriteLine("\nEnter reporter ID:");
+            int reporterId = int.Parse(Console.ReadLine());
+
+            List<IntelReport> reports = reportDAL.GetReportsByReporter(reporterId);
+
+            if (reports.Count == 0)
+            {
+                Console.WriteLine("\nNo reports found for this reporter.");
+                return;
+            }
+
+            foreach (var report in reports)
+            {
+                Console.WriteLine($"\nReport ID: {report.Id}, \nTarget ID: {report.TargetId}, \nText: {report.Text}, \nTimestamp: {report.Timestamp}");
+            }
+        }
+
+        public void GetSecretCode()
+        {
+            Console.WriteLine("\nEnter first name:");
+            string firstName = Console.ReadLine();
+
+            Console.WriteLine("\nEnter last name:");
+            string lastName = Console.ReadLine();
+
+            string cod = personDAL.GetSecretCodeByName(firstName, lastName);
+            string eror = "The name entered does not match what is found in the system.";
+
+            if (cod != null)
+            {
+                Console.WriteLine(cod);
+            }
+            Console.WriteLine(eror);
+        }
+
+    } 
 
 }
