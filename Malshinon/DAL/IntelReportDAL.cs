@@ -107,17 +107,19 @@ namespace Malshinon.DAL
 
                 while (reader.Read())
                 {
+                   
                     IntelReport IntelReport = new IntelReport
                     {
-                        Id = reader.GetInt32("id"),
-                        ReporterId = reader.GetInt32("reporter_id"),
-                        TargetId = reader.GetInt32("target_id"),
-                        Text = reader.GetString("TEXT"),
-                        Timestamp = reader.GetDateTime("TIMESTAMP")
+                            Id = reader.GetInt32("id"),
+                            ReporterId = reader.GetInt32("reporter_id"),
+                            TargetId = reader.GetInt32("target_id"),
+                            Text = reader["TEXT"].ToString(),
+                            Timestamp = Convert.ToDateTime(reader["TIMESTAMP"])
                     };
-
                     Reports.Add(IntelReport);
+                    
                 }
+
             }
             catch (MySqlException ex)
             {
