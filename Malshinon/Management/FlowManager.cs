@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Google.Protobuf.Compiler;
 using Malshinon.DAL;
 using Malshinon.Models;
 using MySqlX.XDevAPI.Common;
@@ -32,9 +33,10 @@ namespace Malshinon.Management
             {
                 Console.WriteLine("\n--- Main Menu ---");
                 Console.WriteLine("\n1. Add Report");
-                Console.WriteLine("2. Display Reports By Reporter");
+                Console.WriteLine("2. Display Reports By Reporter id");
                 Console.WriteLine("3. Get your secret code");
-                Console.WriteLine("4. Exit");
+                Console.WriteLine("4. Get All Peopl");
+                Console.WriteLine("5. Exit");
                 Console.Write("\nChoose an option: ");
 
                 string choice = Console.ReadLine();
@@ -51,6 +53,9 @@ namespace Malshinon.Management
                         GetSecretCode();
                         break;
                     case "4":
+                        GetAllThePeople();
+                        break;
+                    case "5":
                         Console.WriteLine("\nExiting.");
                         return;
                     default:
@@ -118,19 +123,31 @@ namespace Malshinon.Management
 
             reportDAL.AddReport(newReport);
             Console.WriteLine("\nReport added successfully.");
-            UpdateNumReports(reporter);
-            UpdateNumMentions(targrt);
+            UpdateReporter(reporter);
+            Updatetargrt(targrt);
         }
 
-        private void UpdateNumReports(Person person)
+        private void UpdateReporter(Person person)
         {
             person.NumReports++;
+
+            if (person.Type == "target")
+            {
+                person.Type = "both";
+            }
+            person.Type = "reporter";
             personDAL.UpdatePerson(person);
         }
 
-        private void UpdateNumMentions(Person person)
+        private void Updatetargrt(Person person)
         {
             person.NumMentions++;
+
+            if (person.Type == "reporter")
+            {
+                person.Type = "both";
+            }
+            person.Type = "target";
             personDAL.UpdatePerson(person);
         }
 
@@ -169,6 +186,16 @@ namespace Malshinon.Management
                 Console.WriteLine(cod);
             }
             Console.WriteLine(eror);
+        }
+
+        private void GetAllThePeople()
+        {
+            List<Person> persons = personDAL.GetAllPeople();
+
+            foreach (var person in persons)
+            {
+                Console.WriteLine($"\nPerson ID: {person.Id}, \nFirst Name: {person.FirstName}, \nLast Name: {person.LastName}, \nType: {person.Type}, \nNumber Of Reports: {person.NumReports}");
+            }
         }
 
     } 
