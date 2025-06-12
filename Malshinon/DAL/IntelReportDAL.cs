@@ -219,6 +219,44 @@ namespace Malshinon.DAL
             return report;
         }
 
+        public List<int> GetAgentCandidates()
+        {
+            List<int> strongCandidates = new List<int>();
+            MySqlConnection conn = null;
+
+            try
+            {
+                conn = dbConnection.GetOpenConnection();
+
+                string query = @"
+            SELECT reporter_id
+            FROM IntelReports
+            GROUP BY reporter_id
+            HAVING COUNT(*) >= 10 AND AVG(CHAR_LENGTH(TEXT)) >= 100;
+        ";
+
+                MySqlCommand cmd = new MySqlCommand(query, conn);
+                MySqlDataReader reader = cmd.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    strongCandidates.Add(reader.GetInt32("reporter_id"));
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error fetching strong agent candidates: {ex.Message}");
+            }
+            finally
+            {
+                if (conn != null)
+                    dbConnection.CloseConnection(conn);
+            }
+
+            return strongCandidates;
+        }
+
+
     }
 }
 

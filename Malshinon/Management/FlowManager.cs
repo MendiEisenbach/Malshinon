@@ -36,7 +36,8 @@ namespace Malshinon.Management
                 Console.WriteLine("2. Display Reports By Reporter id");
                 Console.WriteLine("3. Get your secret code");
                 Console.WriteLine("4. Get All Peopl");
-                Console.WriteLine("5. Exit");
+                Console.WriteLine("5. Get a list of potential agents");
+                Console.WriteLine("6. Exit");
                 Console.Write("\nChoose an option: ");
 
                 string choice = Console.ReadLine();
@@ -56,6 +57,9 @@ namespace Malshinon.Management
                         GetAllThePeople();
                         break;
                     case "5":
+                        AgentCandidates();
+                        break;
+                    case "6":
                         Console.WriteLine("\nExiting.");
                         return;
                     default:
@@ -195,6 +199,23 @@ namespace Malshinon.Management
             foreach (var person in persons)
             {
                 Console.WriteLine($"\nPerson ID: {person.Id}, \nFirst Name: {person.FirstName}, \nLast Name: {person.LastName}, \nType: {person.Type}, \nNumber Of Reports: {person.NumReports}");
+            }
+        }
+
+        private void AgentCandidates()
+        {
+            List<int> Agents = reportDAL.GetAgentCandidates();
+
+            if (Agents.Count == 0)
+            {
+                Console.WriteLine("\nThere are no candidates for agent appointment.");
+                return;
+            }
+
+            Console.WriteLine("\nReporters with these identification numbers are candidates for agent appointment: ") ;
+            foreach (var agent in Agents)
+            {
+                Console.WriteLine($"\nagent {agent}");
             }
         }
 
