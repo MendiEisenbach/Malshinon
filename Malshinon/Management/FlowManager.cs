@@ -15,8 +15,8 @@ namespace Malshinon.Management
     {
         private PersonDAL personDAL = new PersonDAL();
         private ReportDAL reportDAL = new ReportDAL();
-        public Person reporter = null;
-        public Person targrt = null;
+        public Person? reporter = null;
+        public Person? targrt = null;
 
 
         public FlowManager()
@@ -183,11 +183,13 @@ namespace Malshinon.Management
             string lastName = Console.ReadLine();
 
             string cod = personDAL.GetSecretCodeByName(firstName, lastName);
-            string eror = "The name entered does not match what is found in the system.";
+            string eror = "\nThe name entered does not match what is found in the system.";
 
             if (cod != null)
             {
+                Console.WriteLine("\nThe code for the name you entered is: ");
                 Console.WriteLine(cod);
+                return;
             }
             Console.WriteLine(eror);
         }
@@ -198,10 +200,11 @@ namespace Malshinon.Management
 
             foreach (var person in persons)
             {
-                Console.WriteLine($"\nPerson ID: {person.Id}, \nFirst Name: {person.FirstName}, \nLast Name: {person.LastName}, \nType: {person.Type}, \nNumber Of Reports: {person.NumReports}");
+                Console.WriteLine($"\nPerson ID: {person.Id}, \nFirst Name: {person.FirstName}, \nLast Name: {person.LastName}, \nType: {person.Type}, \nNumber Of Reports: {person.NumReports}, \nNumber Of Mentions: {person.NumMentions}");
             }
         }
 
+       
         private void AgentCandidates()
         {
             List<int> Agents = reportDAL.GetAgentCandidates();

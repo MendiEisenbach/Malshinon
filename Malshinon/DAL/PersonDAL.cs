@@ -17,6 +17,7 @@ namespace Malshinon.DAL
         public void AddPerson(Person person)
         {
             MySqlConnection conn = null;
+
             try
             {
                 conn = dbConnection.GetOpenConnection();
@@ -206,7 +207,6 @@ namespace Malshinon.DAL
 
         public string GetSecretCodeByName(string firstName, string lastName)
         {
-            string secretCode = "";
             MySqlConnection conn = null;
 
             try
@@ -222,12 +222,17 @@ namespace Malshinon.DAL
                 object result = cmd.ExecuteScalar();
                 if (result != null)
                 {
-                    secretCode = result.ToString();
+                    return result.ToString();
+                }
+                else
+                {
+                    return null;
                 }
             }
             catch (MySqlException ex)
             {
                 Console.WriteLine($"Error getting secret code by name: {ex.Message}");
+                return null;
             }
             finally
             {
@@ -236,7 +241,6 @@ namespace Malshinon.DAL
                     dbConnection.CloseConnection(conn);
                 }
             }
-            return secretCode;
         }
 
 

@@ -12,13 +12,13 @@ namespace Malshinon.Models
     {
         public int Id { get; set; }
 
-        public string FirstName { get; set; }
+        public string? FirstName { get; set; }
 
         public string LastName { get; set; }
 
         public string SecretCode { get; set; }
 
-        public string Type { get; set; } //reporter,target,both,potential_agent
+        public string Type { get; set; } 
 
         public int NumReports { get; set; }
 

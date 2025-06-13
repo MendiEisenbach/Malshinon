@@ -233,7 +233,7 @@ namespace Malshinon.DAL
             FROM IntelReports
             GROUP BY reporter_id
             HAVING COUNT(*) >= 10 AND AVG(CHAR_LENGTH(TEXT)) >= 100;
-        ";
+            ";
 
                 MySqlCommand cmd = new MySqlCommand(query, conn);
                 MySqlDataReader reader = cmd.ExecuteReader();
